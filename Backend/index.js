@@ -3,6 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const Profilerouter = require('./Router/Routers.js');
+const Jwt = require('jsonwebtoken');
+const JwtKey = 'chinu'; 
 
 const app = express();
 app.use(bodyParser.json());

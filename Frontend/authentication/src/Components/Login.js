@@ -11,25 +11,41 @@ const Login = () => {
     const navigate = useNavigate();
     
     const SubmitHandler = async (event) => {
-        event.preventDefault()
-        try{
-            const result = await axios.post('http://127.0.0.1:8000/Login',{
-                Email: Email,
-                Password : Password
-            })
-            SetEmail('');
-            SetPassword('');
-
-            if (result.data.success){
-                navigate('/Home');
-            }else {
-                setErrorMessage('Invalid email or password. Please try again.');
+      event.preventDefault();
+      try {
+          // Assuming you store the registration token during registration
+          const storedToken = localStorage.getItem('token');
+  
+          const result = await axios.post('http://127.0.0.1:8000/Login', {
+              Email: Email,
+              Password: Password,
+              token: storedToken, // Include the registration token in the request body
+          });
+  
+          SetEmail('');
+          SetPassword('');
+  
+          if (result.data.success) {
+              // Assuming you store the token during login
+              const loginToken = result.data.token;
+              console.log('Login Token:', result.data.token);
+              console.log('Stored Token during Login:', storedToken);
+              
+              // Check if the token from registration matches the token from login
+              if (loginToken === storedToken) {
+                  navigate('/Home');
+              } else {
+                  console.log('Token mismatch. Please try again.');
               }
-
-        } catch(error){
-            console.log(error)
-        }
-     }
+          } else {
+              setErrorMessage('Invalid email or password. Please try again.');
+          }
+      } catch (error) {
+          console.log(error);
+      }
+  };
+  
+  
 
   return (
     <div>

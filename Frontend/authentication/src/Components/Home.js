@@ -11,7 +11,7 @@ const Home = () => {
   }, []);
 
 
-
+// searching api 
   const Searchandle = async (event) => {
     let key = event.target.value;
     if(key){
@@ -33,12 +33,51 @@ const Home = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/");
-      setdata(response.data);
+      const token = localStorage.getItem('token');
+      console.log(token);
+  
+      if (token) {
+        const response = await axios.get("http://127.0.0.1:8000/", {
+          headers: {
+            authorization: `${token}`
+          }
+        });
+  
+        setdata(response.data);
+      } else {
+        // Handle case when token is not available in localStorage
+        console.log('Token not found in localStorage');
+      }
     } catch (err) {
       console.log(err);
     }
   };
+
+
+  const deletehandle = async (_id) => {
+    try{
+      const token = localStorage.getItem('token');
+      const response = await axios.delete(`http://127.0.0.1:8000/${_id}`,  {
+        headers: {
+          authorization: `${token}`
+        }
+      });
+      if (response.status === 200) {
+        fetchData();
+    } else {
+      console.error(`Failed to delete user with ID ${_id}`);
+      // Handle failure case or display an error message to the user
+    }
+    }catch (err) {
+      console.error(`Error deleting user with ID ${_id}:`, err);
+    }
+  };
+
+
+  const Updatehandle = async (event) => {
+    event.preventDefault();
+  };
+  
 
   return (
     <div>
@@ -63,6 +102,7 @@ const Home = () => {
             <th scope="col">Email</th>
             <th scope="col">Phone_No</th>
             <th scope="col">Password</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -74,6 +114,8 @@ const Home = () => {
                 <td>{item.Email}</td>
                 <td>{item.Phone_No}</td>
                 <td>{item.Password}</td>
+                <td><button onClick={() => deletehandle(item._id)}>Delete</button>
+                 <button onClick={Updatehandle}>Update</button></td>
               </tr>
             ))}
         </tbody>
